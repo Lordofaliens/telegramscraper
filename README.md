@@ -15,7 +15,7 @@ $ npm install
 + TELEGRAM_API_ID, TELEGRAM_API_HASH should be taken from <a href="https://my.telegram.org/auth?to=apps">Telegram API</a>
 + TELEGRAM_PHONE, TELEGRAM_PASSWORD is your private info. This telegram account should be active and have 2FA enabled
 
-### 2. Enter preferred key-words into ./src/util/key-words.ts based on your thematic. Crypto topic is used by default. These words are used to filter the channel thematic and language.
+### 3. Enter the preferred key-words into ./src/util/key-words.ts based on your thematic. Crypto topic is used by default. Key-words are used to filter the channel thematic and language.
 ```bash
 export const cryptoKeywords = [
     'crypto', 'cryptocurrency', 'blockchain', 'bitcoin', 'ethereum', 'altcoin', 'token', 'defi', 'smart contract',
