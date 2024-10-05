@@ -28,6 +28,10 @@ export class ChannelService {
     return this.channelDocument.find({status: { $in: ["added", "outdated"] } }).exec();
   }
 
+  async getAllUnSubbed(): Promise<Channel[]> {
+    return this.channelDocument.find({subscribed: false}).exec();
+  }
+
   async getById(id: string): Promise<Channel | null> {
     let res: Channel | PromiseLike<Channel>;
     try {

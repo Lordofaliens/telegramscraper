@@ -1,4 +1,4 @@
-import readline from "node:readline";
+import * as readline from 'readline';
 import * as AsciiArt from 'ascii-art';
 
 export function detectLanguage(text: string): string {
@@ -24,18 +24,18 @@ export function isOlderThanWeek(date: Date): boolean {
     return now - inputDate > oneWeekInMillis;
 }
 
-export async function promptForChannelUsername(): Promise<string> {
+export async function promptForChannelUsername(): Promise<string[]> {
     const rl = readline.createInterface({
         input: process.stdin,
         output: process.stdout,
     });
-
-    return new Promise((resolve) => {
-        rl.question('Enter your first channel to scrape: ', (answer: string) => {
+    const usernamesString: string = await new Promise((resolve) => {
+        rl.question('Enter your first channels to scrape (put "," between the usernames if many): ', (answer: string) => {
             rl.close();
             resolve(answer.trim());
         });
     });
+    return usernamesString.split(",");
 }
 
 export async function signature() {

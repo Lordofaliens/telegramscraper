@@ -19,6 +19,9 @@ export class Channel extends Document {
 
   @Prop({default: new Date(-8640000000000000)})
   lastVisit: Date;
+
+  @Prop({default: false})
+  subscribed: boolean;
 }
 
 export const ChannelSchema = SchemaFactory.createForClass(Channel);

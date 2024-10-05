@@ -6,7 +6,6 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ScheduleModule } from '@nestjs/schedule';
-import {ChannelInfoService} from "./services/channel-info.service";
 import {WebScraperService} from "./services/web-scraper.service";
 import * as dotenv from "dotenv";
 
@@ -28,6 +27,6 @@ dotenv.config();
       ChannelModule
   ],
   controllers: [AppController, ChannelController],
-  providers: [AppService, ChannelInfoService, WebScraperService],
+  providers: [AppService, WebScraperService],
 })
 export class AppModule {}
