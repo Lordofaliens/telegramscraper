@@ -3,7 +3,6 @@
 ## Description
 
 **Telegram Web Scraper** specializes on discovering and saving as many Telegram channels as possible based on specific topics and languages given by user. Algorithm works mainly through the Telegram **"Similar Channels"** feature. **The Web page scraping mechanism** is used, so the program may behave a bit laggy, just restart in that case.
- This app is not using any Telegram API services, besides authorisation into your account at the beginning to scrape
 
 ## Project setup
 
@@ -55,10 +54,11 @@ $ npm run start:prod
 - <b>Nest JS, TS</b> as main programming framework
 - <b>MongoDB, Mongoose</b> for data storage
 - <b>Puppeteer library</b> for web page scraping
+- <b>Telegram API</b> for getting detailed channel info
 
 ## License
 
-This project is MIT licensed (check LICENSE file in this folder).
+This project is MIT licensed (check LICENSE <a href="https://github.com/Lordofaliens/telegramscraper/blob/master/LICENSE">here</a>).
 
 ## Disclaimer
 
