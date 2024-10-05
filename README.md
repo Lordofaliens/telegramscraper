@@ -55,7 +55,7 @@ $ npm run start:prod
 
 ## License
 
-This project is MIT licensed (check LICENSE.md file in this folder).
+This project is MIT licensed (check LICENSE <a href="https://github.com/Lordofaliens/telegramscraper/blob/master/LICENSE">here</a>).
 
 ## Disclaimer
 
