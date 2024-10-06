@@ -8,6 +8,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ScheduleModule } from '@nestjs/schedule';
 import {WebScraperService} from "./services/web-scraper.service";
 import * as dotenv from "dotenv";
+import {GoogleSheetsService} from "./services/sheets.service";
 
 dotenv.config();
 
@@ -24,9 +25,9 @@ dotenv.config();
       verboseMemoryLeak: false,
       ignoreErrors: false,
     }),
-      ChannelModule
+    ChannelModule
   ],
   controllers: [AppController, ChannelController],
-  providers: [AppService, WebScraperService],
+  providers: [AppService, WebScraperService, GoogleSheetsService],
 })
 export class AppModule {}

@@ -207,11 +207,12 @@ export class WebScraperService implements OnModuleInit {
 
                 await this.openSimilarChannels(false);
 
-                i++;
                 await this.page.waitForSelector('div.ListItem.chat-item-clickable.search-result');
                 clickableDivs = await this.page.$$('div.ListItem.chat-item-clickable.search-result');
+                i++;
             } catch (error) {
                 this.logger.error(`Error processing item ${i}:`, error);
+                i++;
             }
         }
     }
@@ -257,7 +258,7 @@ export class WebScraperService implements OnModuleInit {
     }
 
     // DEPRECATED
-    //@Cron(CronExpression.EVERY_2_HOURS)
+    //@Cron(CronExpression.EVERY_HOUR)
     async resetVisitedChannels() {
         const visitedChannels = (await this.channelService.getAllVisited()).filter(x => isOlderThanWeek(x.lastVisit));
         if(visitedChannels && visitedChannels.length > 0) {
@@ -266,7 +267,7 @@ export class WebScraperService implements OnModuleInit {
         }
     }
 
-    @Cron(CronExpression.EVERY_2_HOURS)
+    @Cron(CronExpression.EVERY_HOUR)
     async subscribeAllFoundChannels() {
         const unSubbedChannels = (await this.channelService.getAllUnSubbed()).map(x => x.username).filter(x => x);
         for(const channel of unSubbedChannels) {
@@ -280,7 +281,7 @@ export class WebScraperService implements OnModuleInit {
         }
     }
 
-    @Cron(CronExpression.EVERY_2_HOURS)
+    @Cron(CronExpression.EVERY_HOUR)
     async processUnvisitedChannels() {
         const unvisitedChannels = (await this.channelService.getAllUnvisited()).map(x => x.username).filter(x => x);
         if(!unvisitedChannels || unvisitedChannels.length === 0) {
