@@ -15,6 +15,7 @@ $ npm install
 + MONGODB_URI is a DB connection string. can be obtained on <a href="https://www.mongodb.com/products/platform/atlas-database">MongoDB website</a>
 + TELEGRAM_API_ID, TELEGRAM_API_HASH should be taken from <a href="https://my.telegram.org/auth?to=apps">Telegram API</a>
 + TELEGRAM_PHONE, TELEGRAM_PASSWORD is your private info. This telegram account should be active and have 2FA enabled
++ SPREADSHEET_ID, SPREADSHEET_LIST should be taken from <a href="https://developers.google.com/sheets/api/guides/concepts">Google Sheets API</a>
 
 ### 3. Enter preferred key-words into ./src/util/key-words.ts based on your thematic. Crypto topic is used by default. These words are used to filter the channel thematic and language.
 ```bash
@@ -32,7 +33,9 @@ export const tap2EarnKeywords = [
 ];
 ```
 
-### 4. Be sure to use English Telegram UI. Other languages are not supported by this script.
+### 4. To store the data into Google Sheets you need to put the credentials obtained from Google API into ./google-sheets-credentials.json file.
+
+### 5. Be sure to use English Telegram UI. Other languages are not supported by this script.
 
 ## Compile and run the app
 
@@ -54,7 +57,7 @@ $ npm run start:prod
 - <b>Nest JS, TS</b> as main programming framework
 - <b>MongoDB, Mongoose</b> for data storage
 - <b>Puppeteer library</b> for web page scraping
-- <b>Telegram API</b> for getting detailed channel info
+- <b>Google Sheets</b> for convenient data analytics
 
 ## License
 
