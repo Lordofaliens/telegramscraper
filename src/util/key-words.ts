@@ -11,7 +11,7 @@ export const cryptoKeywords = [
     'луна', 'монеро', 'bnb', 'litecoin', 'eos', 'trx', 'matic', 'polygon', 'крипт',
 
     // Ukrainian
-    'біт', 'ефіріум', 'криптовалюта', 'стейкінг', 'біток', 'шіткоїн', 'метамаск', 'блокчейн', 'памп',
+    'біткоін', 'ефіріум', 'криптовалюта', 'стейкінг', 'біток', 'шіткоїн', 'метамаск', 'блокчейн', 'памп',
     'шиба іну', 'кардано', 'солана', 'полкадот', 'коін', 'шіткоїн', 'криптовалюти', 'ходл', 'ікси', 'тера',
     'луна', 'монеро', 'bnb', 'лайткоін', 'еос', 'трон', 'матік', 'полігон', 'крипта', 'токен'
 ];
@@ -20,7 +20,7 @@ export const cryptoKeywords = [
 export const tradingKeywords = [
     // English
     'trade', 'trading', 'signal', 'forex', 'bull', 'scalping', 'short', 'long', 'leverage', 'margin', 'fomo',
-    'technical analysis', 'pips', 'trading bot', 'bear', 'bullish', 'bearish', 'buy', 'sell', 'volume', 'stop', 'rsi',
+    'technical analysis', 'pips', 'bear', 'bullish', 'bearish', 'buy', 'sell', 'volume', 'stop', 'rsi',
     'macd', 'futures', 'commodities', 'forex', 'loss', 'okx', 'bingx', "binance", "bitget", "mexc", "bybit", "kucoin", 'okex',
 
     // Russian
@@ -38,11 +38,11 @@ export const tap2EarnKeywords = [
     'earn', 'referral', 'money', 'bonus', 'tap', 'cashback', 'reward', 'affiliate', 'income', 'hamster',
 
     // Russian
-    'заработок', 'клик', 'деньги', 'доход', 'пригласи', 'хом',
+    'заработок', 'клик', 'деньги', 'доход', 'хом',
     'награда', 'афилиаты', 'зарабатывай', 'вознаграждение', 'партнерская программа', 'вывод',
     'темщик', 'темка', 'темки', 'тема', 'темы', 'бонус', 'ворк',
 
     // Ukrainian
-    'заробіток', 'тап', 'гроші', 'дохід', 'запроси',
-    'нагорода', 'афіліати', 'заробляй', 'винагорода', 'партнерська програма', 'вивід'
+    'заробіток', 'тап', 'гроші', 'дохід',
+    'нагорода', 'афіліат', 'зароб', 'винагорода', 'партнерська програма', 'вивід'
 ];

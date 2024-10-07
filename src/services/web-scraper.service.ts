@@ -4,6 +4,7 @@ import {Browser, Page} from 'puppeteer';
 import {ChannelService} from "../mongo/channel.service";
 import {Cron, CronExpression} from "@nestjs/schedule";
 import {detectLanguage, isOlderThanWeek, promptForChannelUsername, signature} from "../util/misc";
+import {cryptoKeywords, tap2EarnKeywords, tradingKeywords} from "../util/key-words";
 
 @Injectable()
 export class WebScraperService implements OnModuleInit {
@@ -17,23 +18,33 @@ export class WebScraperService implements OnModuleInit {
         await signature();
 
         this.browser = await puppeteer.launch({ headless: false });
-        this.page = await this.browser.newPage();
 
-        await this.login();
+        await this.openPage();
         await this.subscribeAllFoundChannels();
         await this.processUnvisitedChannels();
     }
 
-    private async login() {
+    private async openPage() {
+        this.page = await this.browser.newPage();
         await this.page.goto('https://web.telegram.org/a/', { waitUntil: 'networkidle2' });
         this.logger.log('Please log into Telegram Web manually.');
-        await this.page.waitForSelector('input[placeholder="Search"]', { timeout: 30000000 });
+        await this.page.waitForSelector('input[placeholder="Search"]', { timeout: 5000 });
         this.logger.log(`Logged in.`);
         await new Promise(resolve => setTimeout(resolve, 500));
     }
 
     private async startScraping(targetChannels) {
-        for (const channelName of targetChannels) await this.scrapeChannel(channelName);
+        for (const channelName of targetChannels) {
+            try {
+                await this.scrapeChannel(channelName);
+            } catch (e) {
+                if (this.page && !this.page.isClosed()) {
+                    this.logger.error('The page was closed unexpectedly. Reopening the page...');
+                    await this.openPage();
+                } else this.logger.error("Error when subscribing to a channel: " + e);
+            }
+
+        }
         this.logger.log('Channels scraped successfully.');
     }
 
@@ -46,7 +57,10 @@ export class WebScraperService implements OnModuleInit {
             await Promise.race([this.channelService.updatePropertyByUsername(channelName, "status", "visited"), this.channelService.updatePropertyByUsername(channelName, "lastVisit", Date.now())])
         } else {
             const description = await this.getChannelDescription();
-            await this.channelService.createChannel({username: channelName, description, language: detectLanguage(description)});
+            const keyWords = [...cryptoKeywords, ...tradingKeywords, ...tap2EarnKeywords];
+            if(keyWords.filter(keyword => (description.toLowerCase()).includes(keyword.toLowerCase())) && description.includes('@')) {
+                await this.channelService.createChannel({username: channelName, description, language: detectLanguage(description)});
+            } else this.logger.log('Channel is on the wrong topic or no admin tag found.');
         }
 
         await this.page.goto('https://web.telegram.org/a/', { waitUntil: 'networkidle2' });
@@ -55,10 +69,11 @@ export class WebScraperService implements OnModuleInit {
 
     private async searchClickChannel(channelName: string) {
         try {
-            await new Promise(resolve => setTimeout(resolve, 2000));
             this.logger.log('Searching...');
             await this.page.waitForSelector('input[placeholder="Search"]');
+            await new Promise(resolve => setTimeout(resolve, 1000));
             await this.page.click('input[placeholder="Search"]');
+            await new Promise(resolve => setTimeout(resolve, 1000));
             await this.page.type('input[placeholder="Search"]', channelName, { delay: 50 });
             await new Promise(resolve => setTimeout(resolve, 500));
 
@@ -140,10 +155,10 @@ export class WebScraperService implements OnModuleInit {
 
     async openSimilarChannels(isProcessChannels) {
         try {
-            await this.page.waitForSelector('div[id*=RightColumn]', { timeout: 30000 });
-            await this.page.waitForSelector('div[class*=Profile]', { timeout: 30000 });
-            await this.page.waitForSelector('div[class*=TabList]', { timeout: 30000 });
-            await this.page.waitForSelector('span[class*=Tab_inner]', { timeout: 30000 });
+            await this.page.waitForSelector('div[id*=RightColumn]', { timeout: 5000 });
+            await this.page.waitForSelector('div[class*=Profile]', { timeout: 5000 });
+            await this.page.waitForSelector('div[class*=TabList]', { timeout: 5000 });
+            await this.page.waitForSelector('span[class*=Tab_inner]', { timeout: 5000 });
             const similarChannelsSpans = (await this.page.$$('span[class*=Tab_inner]'));
 
             let similarChannelsTabFound = false;
@@ -172,7 +187,7 @@ export class WebScraperService implements OnModuleInit {
 
     async processSimilarChannels() {
         let i = 0;
-        await this.page.waitForSelector('div.ListItem.chat-item-clickable.search-result', { timeout: 30000 });
+        await this.page.waitForSelector('div.ListItem.chat-item-clickable.search-result', { timeout: 5000 });
         let clickableDivs = await this.page.$$('div.ListItem.chat-item-clickable.search-result');
         this.logger.log("clickableDivs LENGTH:"+ clickableDivs.length);
         while(i < clickableDivs.length) {
@@ -194,8 +209,12 @@ export class WebScraperService implements OnModuleInit {
 
                 const channelInfo = {username, description, language: detectLanguage(description)};
                 if(channelInfo && !(await this.channelService.getByUsername(channelInfo.username))) {
-                    this.logger.log('Channel added to the DB: ' + username);
-                    await this.channelService.createChannel(channelInfo);
+
+                    const keyWords = [...cryptoKeywords, ...tradingKeywords, ...tap2EarnKeywords];
+                    if(keyWords.filter(keyword => (description.toLowerCase()).includes(keyword.toLowerCase())) && description.includes('@')) {
+                        this.logger.log('Channel added to the DB: ' + username);
+                        await this.channelService.createChannel(channelInfo);
+                    } else this.logger.log('Channel is on the wrong topic or no admin tag found.');
                 }
 
                 await Promise.all([
@@ -271,13 +290,21 @@ export class WebScraperService implements OnModuleInit {
     async subscribeAllFoundChannels() {
         const unSubbedChannels = (await this.channelService.getAllUnSubbed()).map(x => x.username).filter(x => x);
         for(const channel of unSubbedChannels) {
-            await this.searchClickChannel(channel);
-            await this.subscribeChannel(channel);
-            await this.channelService.updatePropertyByUsername(channel, "subscribed", true)
-            await Promise.all([
-                this.page.waitForNavigation({ waitUntil: 'networkidle2' }),
-                this.page.goBack({ waitUntil: 'networkidle2' })
-            ]);
+            try {
+                await this.searchClickChannel(channel);
+                await this.subscribeChannel(channel);
+                await this.channelService.updatePropertyByUsername(channel, "subscribed", true)
+
+                await Promise.all([
+                    this.page.waitForNavigation({ waitUntil: 'networkidle2' }),
+                    this.page.goBack({ waitUntil: 'networkidle2' }),
+                ]);
+            } catch(e) {
+                if (this.page && !this.page.isClosed()) {
+                    this.logger.error('The page was closed unexpectedly. Reopening the page...');
+                    await this.openPage();
+                } else this.logger.error("Error when subscribing to a channel: " + e);
+            }
         }
     }
 
